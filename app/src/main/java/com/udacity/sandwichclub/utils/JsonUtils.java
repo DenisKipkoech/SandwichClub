@@ -17,42 +17,47 @@ import java.util.List;
 public class JsonUtils {
 
     public static Sandwich parseSandwichJson(String json) {
-        Sandwich mSandwich = new Sandwich();
+
         try {
-            Log.d("JSONUTILS", json);
+
             JSONObject sandwich = new JSONObject(json);
             JSONObject name = (JSONObject) sandwich.get("name");
-            JSONArray alsoKnown = name.getJSONArray("alsoKnownAs");
+            JSONArray alsoKnownAs = name.getJSONArray("alsoKnownAs");
             JSONArray mIngredients = sandwich.getJSONArray("ingredients");
 
             String mainName = name.getString("mainName");
-            List<String> alsoKnownAs = new ArrayList<>();
-            if (alsoKnown != null){
-                int len = alsoKnown.length();
-                for (int i = 0; i <= len; i++){
-                    alsoKnownAs.add(alsoKnown.get(i).toString());
-                }
-            }
+
+            List<String> alsoKnownAsList = new ArrayList<>();
+            getItemFromArray(alsoKnownAsList, alsoKnownAs);
+
+
             String placeOfOrigin = sandwich.getString("placeOfOrigin");
             String description = sandwich.getString("description");
             String image = sandwich.getString("image");
             List<String> ingredients = new ArrayList<>();
-            if (mIngredients != null){
-                int len = mIngredients.length();
-                for (int i = 0; i <= len; i++){
-                    ingredients.add(mIngredients.get(i).toString());
-                }
-            }
+            getItemFromArray(ingredients, mIngredients);
 
-            mSandwich = new Sandwich(mainName, alsoKnownAs, placeOfOrigin,
+
+            return new Sandwich(mainName, alsoKnownAsList, placeOfOrigin,
                     description, image, ingredients);
+
 
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+    private static void getItemFromArray(List<String> listItem, JSONArray jsonArray){
+        int loop = 0;
+        while(loop < jsonArray.length()){
+            try {
+                listItem.add(jsonArray.getString(loop));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            loop += 1;
         }
 
-       return mSandwich;
     }
-
 
 }
